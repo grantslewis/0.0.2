@@ -8,8 +8,7 @@ from diffusers import StableDiffusionXLControlNetPipeline, ControlNetModel, Auto
 from diffusers.utils import load_image
 import torch
 import avatar_generation
-
-port = 5000
+import sys
 
 # Initialize the Flask application
 app = Flask(__name__)
@@ -68,4 +67,12 @@ def transform_image():
     return img_str # result_image #"Image transformation done!"
 
 if __name__ == '__main__':
+    port = 5000
+    if len(sys.argv) > 1:
+        try:
+            # Try to convert the first argument to an integer
+            port = int(sys.argv[1])
+        except ValueError:
+            print("Provided argument is not a valid port number. Using default port 5000.")
+
     app.run(debug=True, port=port)
