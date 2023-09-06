@@ -26,13 +26,15 @@
 <input type="file" id="fileInput" accept="image/*" onchange="handleImageUpload(event)">
 <!-- <button id="uploadImageButton">Upload Image</button> -->
 
+
+<button id="submit">Transform Image</button>
+
+<img id="result-image" src="" alt="Transformed Image" style="display:none;">
 <script>
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
 let drawing = false;
-let eraserMode = false;
-let color = "#000000";
 
 canvas.addEventListener('mousedown', () => { drawing = true; });
 canvas.addEventListener('mouseup', () => { drawing = false; ctx.beginPath(); });
@@ -41,9 +43,9 @@ canvas.addEventListener('mousemove', draw);
 function draw(event) {
     if (!drawing) return;
 
-    ctx.strokeStyle = eraserMode ? "white" : color;
-    ctx.lineWidth = eraserMode ? 20: 5;
+    ctx.lineWidth = 5;
     ctx.lineCap = 'round';
+    ctx.strokeStyle = 'black';
 
     ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
     ctx.stroke();
@@ -98,8 +100,10 @@ $('#submit').click(function() {
         data: {
             imageBase64: dataURL
         },
-        success: function(response) {
-            alert(response);
+        success: function(resultImage) {
+            let blob = new Blob([resultImage], { type: "image/png" });
+            let url = window.URL.createObjectURL(blob);
+            $("#result-image").attr("src", url).show();
         }
     });
 });
