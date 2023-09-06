@@ -57,7 +57,7 @@ def transform_image():
     # For demonstration purposes in this code, let's just save the image as-is
     image.save("received_image.png")
     
-    return "Image transformation done!"
+    return result_image #"Image transformation done!"
 
 if __name__ == '__main__':
     app.run(debug=True)
