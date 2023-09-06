@@ -3,12 +3,18 @@ from PIL import Image
 import cv2
 import numpy as np
 
-def caption_image(cap_process, cap_model, image, text):
-    inputs = cap_process(image, text, return_tensors="pt").to("cuda", torch.float16)
+def caption_image(image):
 
-    out = cap_model.generate(**inputs)
-    prompt = cap_process.decode(out[0], skip_special_tokens=True)
-    return prompt
+    processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-large")
+model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-large", torch_dtype=torch.float16).to("cuda")
+
+# conditional image captioning
+text = "a picture of "
+inputs = processor(image, text, return_tensors="pt").to("cuda", torch.float16)
+
+out = model.generate(**inputs)
+prompt = processor.decode(out[0], skip_special_tokens=True)
+prompt
 
 def canny_generation(image, t_lower=100, t_upper=200):
     image = np.array(image)

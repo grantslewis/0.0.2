@@ -1,12 +1,15 @@
 from flask import Flask, render_template, request
 import base64
 import io
+# from io import BytesIO
 from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from diffusers import StableDiffusionXLControlNetPipeline, ControlNetModel, AutoencoderKL
 from diffusers.utils import load_image
 import torch
 import avatar_generation
+
+port = 5000
 
 # Initialize the Flask application
 app = Flask(__name__)
@@ -44,9 +47,13 @@ def transform_image():
     data_url = request.values['imageBase64']
     image_data = base64.b64decode(data_url.split(',')[1])
     image = Image.open(io.BytesIO(image_data))
+<<<<<<< HEAD
     image = image.resize((1024,1024))
     
     image.save('prompt_image.png')
+=======
+    image.save("received_image.png")
+>>>>>>> 9b0a69a6cc1c4e3ce4eed681a977da6e63d56a3c
     
     prompt = avatar_generation.caption_image(cap_processor, cap_model, image, text=caption_text, device=device)
     
@@ -54,8 +61,20 @@ def transform_image():
     
     result_image = avatar_generation.generate_avatar(pipe, prompt, controlnet_conditioning_scale, image)
     result_image.save("result_image.png")
+<<<<<<< HEAD
+=======
     
-    return result_image #"Image transformation done!"
+    # Run your deep learning pipeline here
+    # For example: transformed_image = model(image)
+    # Note: you might need to preprocess the image to be compatible with your model and also handle the output as required.
+    # For demonstration purposes in this code, let's just save the image as-is
+>>>>>>> 9b0a69a6cc1c4e3ce4eed681a977da6e63d56a3c
+    
+    buffered = io.BytesIO()
+    result_image.save(buffered, format="PNG")
+    img_str = base64.b64encode(buffered.getvalue())
+    
+    return img_str # result_image #"Image transformation done!"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=port)
