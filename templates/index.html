@@ -12,6 +12,8 @@
 
 <button id="submit">Transform Image</button>
 
+<img id="result-image" src="" alt="Transformed Image" style="display:none;">
+
 <script>
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -45,8 +47,10 @@ $('#submit').click(function() {
         data: {
             imageBase64: dataURL
         },
-        success: function(response) {
-            alert(response);
+        success: function(resultImage) {
+            let blob = new Blob([resultImage], { type: "image/png" });
+            let url = window.URL.createObjectURL(blob);
+            $("#result-image").attr("src", url).show();
         }
     });
 });
