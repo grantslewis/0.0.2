@@ -11,12 +11,16 @@
 <canvas id="canvas" width="400" height="400" style="border: 1px solid;"></canvas>
 
 <button id="submit">Transform Image</button>
+<button id="eraserButton">Eraser</button>
+<button id="clearButton">Clear</button>
 
 <script>
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
 let drawing = false;
+let eraserMode = false;
+let color = "#000000";
 
 canvas.addEventListener('mousedown', () => { drawing = true; });
 canvas.addEventListener('mouseup', () => { drawing = false; ctx.beginPath(); });
@@ -26,15 +30,31 @@ canvas.addEventListener('mousemove', draw);
 function draw(event) {
     if (!drawing) return;
 
+    ctx.strokeStyle = eraserMode ? "white" : color;
     ctx.lineWidth = 5;
     ctx.lineCap = 'round';
-    ctx.strokeStyle = 'black';
 
     ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
     ctx.stroke();
     ctx.beginPath();
     ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
 }
+
+const eraserButton = document.getElementById("eraserButton");
+eraserButton.addEventListener("click", () => {
+    eraserMode = !eraserMode;
+    if (eraserMode) {
+        color = "white";
+        // colorPicker.value = color;
+    } else {
+        // color = colorPicker.value;
+    }
+});
+
+const clearButton = document.getElementById("clearButton");
+clearButton.addEventListener("click", () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
 
 $('#submit').click(function() {
     const dataURL = canvas.toDataURL();
