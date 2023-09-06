@@ -12,14 +12,17 @@ import avatar_generation
 app = Flask(__name__)
 
 caption_path = "Salesforce/blip-image-captioning-large"
+caption_text = "a picture of "
+
 control_net_path = "diffusers/controlnet-canny-sdxl-1.0"
 vae_path = "madebyollin/sdxl-vae-fp16-fix"
 diffuser_path = "stabilityai/stable-diffusion-xl-base-1.0"
 controlnet_conditioning_scale = 0.5
+device = "cuda"
 
 # Load the HuggingFace model outside the route so it's loaded only once when the Flask app starts
 cap_processor = BlipProcessor.from_pretrained(caption_path)
-cap_model = BlipForConditionalGeneration.from_pretrained(caption_path, torch_dtype=torch.float16).to("cuda")
+cap_model = BlipForConditionalGeneration.from_pretrained(caption_path, torch_dtype=torch.float16).to(device)
 
 controlnet = ControlNetModel.from_pretrained(
     control_net_path, torch_dtype=torch.float16
@@ -44,7 +47,7 @@ def transform_image():
     image_data = base64.b64decode(data_url.split(',')[1])
     image = Image.open(io.BytesIO(image_data))
     
-    prompt = avatar_generation.caption_image(cap_processor, cap_model, image, "a picture of ")
+    prompt = avatar_generation.caption_image(cap_processor, cap_model, image, text=caption_text, device=device)
     
     result_image = avatar_generation.generate_avatar(pipe, prompt, controlnet_conditioning_scale, image)
     result_image.save("result_image.png")

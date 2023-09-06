@@ -3,8 +3,8 @@ from PIL import Image
 import cv2
 import numpy as np
 
-def caption_image(cap_process, cap_model, image, text):
-    inputs = cap_process(image, text, return_tensors="pt").to("cuda", torch.float16)
+def caption_image(cap_process, cap_model, image, text, device="cuda"):
+    inputs = cap_process(image, text, return_tensors="pt").to(device, torch.float16)
 
     out = cap_model.generate(**inputs)
     prompt = cap_process.decode(out[0], skip_special_tokens=True)
