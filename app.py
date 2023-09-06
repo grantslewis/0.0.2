@@ -4,17 +4,17 @@ import io
 from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
 import torch
+import model
 
 # Initialize the Flask application
 app = Flask(__name__)
 
 caption_path = "Salesforce/blip-image-captioning-large"
 
+# Load the HuggingFace model outside the route so it's loaded only once when the Flask app starts
 cap_processor = BlipProcessor.from_pretrained(caption_path)
 cap_model = BlipForConditionalGeneration.from_pretrained(caption_path, torch_dtype=torch.float16).to("cuda")
 
-# Load the HuggingFace model outside the route so it's loaded only once when the Flask app starts
-model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-large", torch_dtype=torch.float16).to("cuda")
 
 # Define a route for the default URL, which loads the form
 @app.route('/')
@@ -27,6 +27,8 @@ def transform_image():
     data_url = request.values['imageBase64']
     image_data = base64.b64decode(data_url.split(',')[1])
     image = Image.open(io.BytesIO(image_data))
+    
+    prompt = model.caption_image(cap_processor, cap_model, image, "a picture of ")
     
     # Run your deep learning pipeline here
     # For example: transformed_image = model(image)
