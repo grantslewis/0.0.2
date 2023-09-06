@@ -8,6 +8,8 @@ from diffusers.utils import load_image
 import torch
 import avatar_generation
 
+port = 5000
+
 # Initialize the Flask application
 app = Flask(__name__)
 
@@ -60,4 +62,4 @@ def transform_image():
     return result_image #"Image transformation done!"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=port)
