@@ -6,13 +6,25 @@
 </head>
 <body>
 
-<h1>Draw an Image</h1>
+<h1 id="mainHeader">Draw an Image</h1>
 
-<canvas id="canvas" width="400" height="400" style="border: 1px solid;"></canvas>
+<div id="canvas-container">
+    <canvas id="canvas" width="400" height="400" style="border: 1px solid;"></canvas>
+</div>
 
-<button id="submit">Transform Image</button>
-<button id="eraserButton">Eraser</button>
-<button id="clearButton">Clear</button>
+<div id="drawModes">
+    <button id="eraserButton">Eraser</button>
+    <button id="drawButton">Draw</button>
+    <button id="clearButton">Clear</button>
+    <button id="submit">Transform Image</button>
+</div>
+
+<div id="controls">
+
+</div>
+
+<input type="file" id="fileInput" accept="image/*" onchange="handleImageUpload(event)">
+<!-- <button id="uploadImageButton">Upload Image</button> -->
 
 <script>
 const canvas = document.getElementById('canvas');
@@ -24,7 +36,6 @@ let color = "#000000";
 
 canvas.addEventListener('mousedown', () => { drawing = true; });
 canvas.addEventListener('mouseup', () => { drawing = false; ctx.beginPath(); });
-
 canvas.addEventListener('mousemove', draw);
 
 function draw(event) {
@@ -37,24 +48,46 @@ function draw(event) {
     ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+    ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);   
 }
 
 const eraserButton = document.getElementById("eraserButton");
 eraserButton.addEventListener("click", () => {
-    eraserMode = !eraserMode;
-    if (eraserMode) {
-        color = "white";
-        // colorPicker.value = color;
-    } else {
-        // color = colorPicker.value;
-    }
+    eraserMode = true;
+});
+
+const drawButton = document.getElementById("eraserButton");
+eraserButton.addEventListener("click", () => {
+    eraserMode = false;
 });
 
 const clearButton = document.getElementById("clearButton");
 clearButton.addEventListener("click", () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
+
+const uploadImageButton = document.getElementById("uploadImageButton");
+uploadImageButton.addEventListener("click", () => {
+    const fileInput = document.getElementById("fileInput");
+    fileInput.click(); // Trigger the file input click event
+});
+
+function handleImageUpload(event) {
+    const fileInput = event.target;
+    const canvas = document.getElementById("canvas");
+    const context = canvas.getContext("2d");
+
+    const image = new Image();
+    image.onload = () => {
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    };
+
+    const file = fileInput.files[0];
+    if (file) {
+        const imageURL = URL.createObjectURL(file);
+        image.src = imageURL;
+    }
+}
 
 $('#submit').click(function() {
     const dataURL = canvas.toDataURL();
@@ -74,3 +107,56 @@ $('#submit').click(function() {
 
 </body>
 </html>
+
+<style>
+    #canvas-container {
+        position: relative;
+        text-align: center;
+    }
+
+    #canvas {
+        border: 1px solid black;
+    }
+
+    #controls {
+        margin-top: 10px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #controls button {
+        margin: 5px;
+        display: block;
+    }
+
+    #drawModes {
+        display: flex;
+        flex-direction: row;
+        margin-left: 40%;
+    }
+
+    #eraserButton {
+        margin: 5px;
+    }
+
+    #drawButton {
+        margin: 5px
+    }
+
+    #clearButton {
+        margin: 5px;
+    }
+
+    #submit {
+        margin: 5px;
+    }
+
+
+    #mainHeader {
+        text-align: center;
+    }
+
+</style>
